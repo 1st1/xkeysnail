@@ -412,6 +412,8 @@ def on_event(event, device_name, quiet):
 def on_key(key, action, wm_class=None, quiet=False):
     if key in Modifier.get_all_keys():
         update_pressed_modifier_keys(key, action)
+        if key == Key.LEFT_ALT:
+            return
         send_key_action(key, action)
     elif not action.is_pressed():
         if is_pressed(key):
@@ -465,7 +467,12 @@ def transform_key(key, action, wm_class=None, quiet=False):
     # Not found in all keymaps
     if is_top_level:
         # If it's top-level, pass through keys
-        send_key_action(key, action)
+        if Key.LEFT_ALT in _pressed_modifier_keys:
+            send_key_action(Key.LEFT_ALT, Action.PRESS)
+            send_key_action(key, action)
+            send_key_action(Key.LEFT_ALT, Action.RELEASE)
+        else:
+            send_key_action(key, action)
 
     _mode_maps = None
 
